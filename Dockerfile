@@ -78,7 +78,12 @@ RUN virtualenv venv
 RUN ln -s /venv /root/venv
 RUN echo "done"
 
+# Installing YARN
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+RUN apt-get update -qq && apt-get -y install yarn
+
 # Installing PostgreSQL
-RUN apt-get update -qq && apt-get install -y -qq postgresql postgresql-contrib libpq-dev cmake
+RUN apt-get install -y -qq postgresql postgresql-contrib libpq-dev cmake
 
 ENTRYPOINT /bin/bash -l
