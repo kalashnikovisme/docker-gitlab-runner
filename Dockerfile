@@ -16,9 +16,9 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
 RUN echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list
 
 RUN apt-get update
+
 # Install vnc, xvfb in order to create a 'fake' display and firefox
-RUN apt-get install -y --allow-unauthenticated google-chrome-stable
-RUN apt-get install -y x11vnc xvfb
+RUN apt-get install -y --allow-unauthenticated google-chrome-stable x11vnc xvfb
 
 RUN gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
 RUN curl -sSL https://get.rvm.io | bash -s stable
