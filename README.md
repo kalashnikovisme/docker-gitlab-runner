@@ -1,6 +1,6 @@
 A Docker image with:
 
-* Ubunut 16.04
+* Ubuntu 16.04
 * Chrome
 * Chromedriver
 * Xvfb
@@ -45,13 +45,11 @@ cucumber:
   stage: cucumber
   script:
   - rvm use 2.2.3
-  - ruby -v                                     
-  - gem install bundler  --no-ri --no-rdoc    
-  - bundle install -j $(nproc) --path vendor 
+  - ruby -v
+  - gem install bundler  --no-ri --no-rdoc
+  - bundle install -j $(nproc) --path vendor
   - npm install
   - npm start &
-  - sleep 10 
-  - export DISPLAY=:99
-  - /etc/init.d/xvfb start
+  - sleep 10
   - bundle exec cucumber --format html --out cucumber.html --format pretty --format json --out tests.cucumber
 ```
