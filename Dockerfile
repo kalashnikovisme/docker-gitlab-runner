@@ -69,6 +69,9 @@ RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 RUN apt-get update
 RUN apt-get install -y google-cloud-sdk google-cloud-sdk-app-engine-python
 
+RUN apt-get update
+RUN apt-get install -y imagemagick libmagickwand-dev
+
 RUN pip install virtualenv
 RUN virtualenv venv
 RUN ln -s /venv /root/venv
