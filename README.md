@@ -18,38 +18,13 @@ docker build -t chrome .
 ### Deploying to docker hub
 
 ```
-docker tag chrome coder36/chrome
-docker push coder36/chrome
+docker tag %{ruby_version} kalashnikovisme/ci-rails
+docker push kalashnikovisme/ci-rails
 ```
 
 
-### Pulling from docker  - [https://hub.docker.com/r/coder36/chrome](https://hub.docker.com/r/coder36/chrome)
+### Pulling from docker  - [https://hub.docker.com/r/kalashnikovisme/ci-rails](https://hub.docker.com/r/kalashnikovisme/ci-rails)
 ```
-docker run -t -i coder36/chrome
+docker run -t -i kalashnikovisme/ci-rails
 
-```
-
-
-### Example `.gitlab-ci.yml`
-```
-image: "coder36/chrome"
-
-stages:
-  - cucumber
-
-cache:
-  paths:
-    - vendor
-    - node_modules
-cucumber:
-  stage: cucumber
-  script:
-  - rvm use 2.2.3
-  - ruby -v
-  - gem install bundler  --no-ri --no-rdoc
-  - bundle install -j $(nproc) --path vendor
-  - npm install
-  - npm start &
-  - sleep 10
-  - bundle exec cucumber --format html --out cucumber.html --format pretty --format json --out tests.cucumber
 ```
