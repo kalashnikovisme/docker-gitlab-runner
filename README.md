@@ -12,7 +12,7 @@ Built for testing ruby / cucumber / selenium and node server apps.
 
 ### Building
 ```
-docker build -t chrome .
+docker build -t rb-%{ruby-version} .
 ```
 
 ### Deploying to docker hub
@@ -26,5 +26,4 @@ docker push kalashnikovisme/ci-rails
 ### Pulling from docker  - [https://hub.docker.com/r/kalashnikovisme/ci-rails](https://hub.docker.com/r/kalashnikovisme/ci-rails)
 ```
 docker run -t -i kalashnikovisme/ci-rails
-
 ```
