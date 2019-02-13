@@ -50,6 +50,7 @@ RUN chmod +x chromedriver
 RUN mv -f chromedriver /usr/local/share/chromedriver
 RUN ln -s /usr/local/share/chromedriver /usr/local/bin/chromedriver
 RUN ln -s /usr/local/share/chromedriver /usr/bin/chromedriver
+RUN apt-get install libnss3-dev
 
 RUN mkdir ~/.vnc
 # Setup a password
