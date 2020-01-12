@@ -1,99 +1,37 @@
-FROM ubuntu:16.04
+FROM ruby:2.7.0
 
-### VARIABLES
+RUN set -ex \
+  && apt-get update \
+  && apt-get install -y --no-install-recommends xauth xvfb xfonts-100dpi xfonts-75dpi \
+  xfonts-scalable xfonts-cyrillic qt5-default libqt5webkit5-dev \
+  gstreamer1.0-plugins-base gstreamer1.0-tools gstreamer1.0-x libnss3 \
+  unzip wget curl git imagemagick libmagickwand-dev libpq-dev cmake \
+  && rm -rf /var/lib/apt/lists/* \
+  && rm -rf /var/cache/apt/archives/*.deb
 
-ENV RUBY_VERSION 2.5.1
+# Install Chrome
+ARG CHROME_VERSION="google-chrome-stable"
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+  && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list \
+  && apt-get update -qqy \
+  && apt-get -qqy install \
+  ${CHROME_VERSION:-google-chrome-stable} \
+  && rm /etc/apt/sources.list.d/google-chrome.list \
+  && rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
-###
-RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+COPY wrap_chrome_binary /opt/bin/wrap_chrome_binary
+RUN /opt/bin/wrap_chrome_binary
 
-# make sure the package repository is up to date
+ARG CHROME_DRIVER_VERSION="latest"
+RUN CD_VERSION=$(if [ ${CHROME_DRIVER_VERSION:-latest} = "latest" ]; then echo $(wget -qO- https://chromedriver.storage.googleapis.com/LATEST_RELEASE); else echo $CHROME_DRIVER_VERSION; fi) \
+  && echo "Using chromedriver version: "$CD_VERSION \
+  && wget --no-verbose -O /tmp/chromedriver_linux64.zip https://chromedriver.storage.googleapis.com/$CD_VERSION/chromedriver_linux64.zip \
+  && rm -rf /opt/selenium/chromedriver \
+  && unzip /tmp/chromedriver_linux64.zip -d /opt/selenium \
+  && rm /tmp/chromedriver_linux64.zip \
+  && mv /opt/selenium/chromedriver /opt/selenium/chromedriver-$CD_VERSION \
+  && chmod 755 /opt/selenium/chromedriver-$CD_VERSION \
+  && ln -fs /opt/selenium/chromedriver-$CD_VERSION /usr/bin/chromedriver
 
-RUN apt-get update
-RUN apt-get install -y unzip wget curl git
-
-#RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
-#RUN echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list
-
-#RUN apt-get update
-
-# Install vnc, xvfb in order to create a 'fake' display and firefox
-RUN apt-get install -y --allow-unauthenticated x11vnc xvfb
-#RUN apt-get install google-chrome-stable=65
-
-RUN apt-get -y install gdebi
-RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-RUN gdebi google-chrome-stable_current_amd64.deb 
-
-RUN gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
-RUN curl -sSL https://get.rvm.io | bash -s stable
-
-RUN /bin/bash -l -c rvm requirements
-ENV PATH $PATH:/usr/local/rvm/bin
-RUN source /usr/local/rvm/scripts/rvm
-
-
-RUN rvm install ${RUBY_VERSION}
-RUN echo "source /usr/local/rvm/scripts/rvm" >> /root/.bash_profile
-RUN echo "rvm --default use ${RUBY_VERSION}" >> /root/.bash_profile
-RUN /usr/local/rvm/bin/rvm ${RUBY_VERSION} do gem install bundler 
-
-RUN /bin/bash -l -c rvm --default use ${RUBY_VERSION}
-
-RUN wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.32.1/install.sh | bash
-RUN tail -2 /root/.bashrc >> /root/.bash_profile
-RUN /bin/bash -l -c "nvm install 8.9.1"
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
-RUN wget http://chromedriver.storage.googleapis.com/2.39/chromedriver_linux64.zip
-RUN unzip chromedriver_linux64.zip
-RUN chmod +x chromedriver
-RUN mv -f chromedriver /usr/local/share/chromedriver
-RUN ln -s /usr/local/share/chromedriver /usr/local/bin/chromedriver
-RUN ln -s /usr/local/share/chromedriver /usr/bin/chromedriver
-RUN apt-get install libnss3-dev
-
-RUN mkdir ~/.vnc
-# Setup a password
-RUN x11vnc -storepasswd 1234 ~/.vnc/passwd
-
-ENV DISPLAY :99
-
-# Install Xvfb init script
-
-ADD xvfb_init /etc/init.d/xvfb
-RUN chmod a+x /etc/init.d/xvfb
-ADD xvfb-daemon-run /usr/bin/xvfb-daemon-run
-RUN chmod a+x /usr/bin/xvfb-daemon-run
-
-# Allow root to execute Google Chrome by replacing launch script
-ADD google-chrome-launcher /usr/bin/google-chrome
-RUN chmod a+x /usr/bin/google-chrome
-
-RUN apt-get install -y python python-pip
-RUN apt-get install -y lsb-release apt-transport-https
-
-RUN export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
-RUN echo "deb https://packages.cloud.google.com/apt cloud-sdk-xenial main" > /etc/apt/sources.list.d/google-cloud-sdk.list
-RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-RUN apt-get update
-RUN apt-get install -y google-cloud-sdk google-cloud-sdk-app-engine-python
-
-RUN pip install virtualenv
-RUN virtualenv venv
-RUN ln -s /venv /root/venv
-RUN echo "done"
-
-# Installing YARN
-RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-RUN apt-get update -qq && apt-get -y install yarn
-
-# Installing Imagemagick-preview1
-RUN apt-get update
-RUN apt-get install -y imagemagick libmagickwand-dev
-
-# Installing PostgreSQL
-RUN apt-get install -y -qq postgresql postgresql-contrib cmake
-RUN apt-get install -y libpq-dev
-
-ENTRYPOINT /bin/bash -l
+RUN curl -sL https://deb.nodesource.com/setup_8.x |  bash - 
+RUN apt-get install nodejs -y

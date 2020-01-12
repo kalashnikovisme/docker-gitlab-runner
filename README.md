@@ -1,14 +1,11 @@
 A Docker image with:
 
-* Ubuntu 16.04
+* Ruby-2.7.0
 * Chrome
 * Chromedriver
-* Xvfb
-* Rvm
 * Npm
-* Python
 
-Built for testing ruby / cucumber / selenium and node server apps.
+Built for testing ruby / cucumber / selenium.
 
 ### Building
 ```
