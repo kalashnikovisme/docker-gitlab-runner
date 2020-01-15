@@ -1,4 +1,4 @@
-FROM ruby:2.7.0
+FROM ruby:2.5.6
 
 RUN set -ex \
   && apt-get update \

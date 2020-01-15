@@ -1,6 +1,6 @@
 A Docker image with:
 
-* Ruby-2.7.0
+* Ruby-2.5.6
 * Chrome
 * Chromedriver
 * Npm
