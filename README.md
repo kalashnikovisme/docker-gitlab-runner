@@ -1,13 +1,23 @@
 A Docker image with:
 
-* Ruby-2.7.0
+* Ruby
 * Chrome
 * Chromedriver
-* Npm
+* NodeJS
 
 Built for testing ruby / cucumber / selenium.
 
-### Building
+## Versions
+
+* ruby-2.5.6
+* ruby-2.7.0
+
+## Usage
+
+kalashnikovisme/ci-rails:#{your_ruby_version}
+
+### Building own ruby version
+
 ```
 docker build -t rb-%{ruby-version} .
 ```
