@@ -1,8 +1,8 @@
 A Docker image with:
 
 * Ruby
-* Chrome
-* Chromedriver
+* Chrome (latest)
+* Chromedriver (latest)
 * NodeJS
 
 Built for testing ruby / cucumber / selenium.
