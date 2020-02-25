@@ -19,7 +19,7 @@ kalashnikovisme/ci-rails:#{your_ruby_version}
 ### Building own ruby version
 
 ```
-docker build -t rb-%{ruby-version} .
+docker build -t ruby-%{ruby-version} .
 ```
 
 ### Deploying to docker hub

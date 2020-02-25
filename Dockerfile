@@ -22,8 +22,8 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
 COPY wrap_chrome_binary /opt/bin/wrap_chrome_binary
 RUN /opt/bin/wrap_chrome_binary
 
-ARG CHROME_DRIVER_VERSION="latest"
-RUN CD_VERSION=$(if [ ${CHROME_DRIVER_VERSION:-latest} = "latest" ]; then echo $(wget -qO- https://chromedriver.storage.googleapis.com/LATEST_RELEASE); else echo $CHROME_DRIVER_VERSION; fi) \
+ARG CHROME_DRIVER_VERSION="80.0.3987.106"
+RUN CD_VERSION=$(if [ ${CHROME_DRIVER_VERSION:-latest} = "80.0.3987.106" ]; then echo $(wget -qO- https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION); else echo $CHROME_DRIVER_VERSION; fi) \
   && echo "Using chromedriver version: "$CD_VERSION \
   && wget --no-verbose -O /tmp/chromedriver_linux64.zip https://chromedriver.storage.googleapis.com/$CD_VERSION/chromedriver_linux64.zip \
   && rm -rf /opt/selenium/chromedriver \
