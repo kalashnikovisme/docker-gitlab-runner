@@ -11,6 +11,7 @@ Built for testing ruby / cucumber / selenium.
 
 * ruby-2.5.6
 * ruby-2.7.0
+* ruby-2.7.1
 
 ## Usage
 
